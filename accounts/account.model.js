@@ -11,6 +11,7 @@ function model(sequelize) {
         lastName: { type: DataTypes.STRING, allowNull: false },
         acceptTerms: { type: DataTypes.BOOLEAN },
         role: { type: DataTypes.STRING, allowNull: false },
+        isActive: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true},
         verificationToken: { type: DataTypes.STRING },
         verified: { type: DataTypes.DATE },
         resetToken: { type: DataTypes.STRING },
@@ -23,14 +24,18 @@ function model(sequelize) {
             get() { return !!(this.verified || this.passwordReset); }
         }
     };
+
     const options = {
-        timestamps: false,
+        // disable default timestamp fields (createdAt and updatedAt)
+        timestamps: false, 
         defaultScope: {
+            // exclude password hash by default
             attributes: { exclude: ['passwordHash'] }
         },
         scopes: {
+            // include hash with this scope
             withHash: { attributes: {}, }
-        }
+        }        
     };
 
     return sequelize.define('account', attributes, options);
